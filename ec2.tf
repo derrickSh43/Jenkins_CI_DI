@@ -68,12 +68,12 @@ resource "aws_instance" "JenkinsInstance" {
   security_groups = [aws_security_group.ec2j_sg.id]
   subnet_id       = aws_subnet.BackEnd_private_subnet[0].id
 
-   user_data =  filebase64("get_initial_password.sh")
+   user_data_base64 = ("get_initial_password.sh")
 }
 
 #Fetch password after Jenkins is provisioned
 data "external" "jenkins_password" {
-  program = ["./get_initial_password.sh"]
+  program = ["get_initial_password.sh"]
   depends_on = [aws_instance.JenkinsInstance]
 }
 
