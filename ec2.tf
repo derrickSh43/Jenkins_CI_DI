@@ -73,7 +73,7 @@ resource "aws_instance" "JenkinsInstance" {
 
 #Fetch password after Jenkins is provisioned
 data "external" "jenkins_password" {
-  program = ["get_initial_password.sh"]
+  program = ["./get_initial_password.sh"]
   depends_on = [aws_instance.JenkinsInstance]
 }
 
