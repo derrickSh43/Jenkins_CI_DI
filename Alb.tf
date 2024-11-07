@@ -12,7 +12,7 @@ resource "aws_lb" "app_lb" {
 
 resource "aws_lb_target_group" "alb_ec2_tg" {
   name     = "web-server-tg"
-  port     = 80
+  port     = 8080
   protocol = "HTTP"
   #target_type = "instance"
   vpc_id = aws_vpc.dev_vpc.id
@@ -35,40 +35,40 @@ resource "aws_lb_target_group" "ec2_tg" {
 
 }
 resource "aws_lb_target_group_attachment" "tg_attachment_b" {
- target_group_arn = aws_lb_target_group.ec2_tg.arn
- target_id        = aws_instance.JenkinsInstance.id
- port             = 8080
+  target_group_arn = aws_lb_target_group.ec2_tg.arn
+  target_id        = aws_instance.JenkinsInstance.id
+  port             = 8080
 }
 
 
 //5. alb listener
 resource "aws_lb_listener" "alb_listener" {
   load_balancer_arn = aws_lb.app_lb.arn
-  port         = 80
-  protocol     = "HTTP"
- 
+  port              = 80
+  protocol          = "HTTP"
+
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.alb_ec2_tg.arn
-    
+
   }
 
 }
 resource "aws_lb_listener_rule" "rule_b" {
- listener_arn = aws_lb_listener.alb_listener.arn
- priority     = 60
- 
+  listener_arn = aws_lb_listener.alb_listener.arn
+  priority     = 60
 
- action {
-   type             = "forward"
-   target_group_arn = aws_lb_target_group.ec2_tg.arn
- }
 
- condition {
-   path_pattern {
-     values = ["/jenkins"]
-   }
- }
+  action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.ec2_tg.arn
+  }
+
+  condition {
+    path_pattern {
+      values = ["/jenkins"]
+    }
+  }
 }
 
 resource "aws_security_group" "alb_sg" {
@@ -83,7 +83,7 @@ resource "aws_security_group" "alb_sg" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-    ingress {
+  ingress {
     from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"

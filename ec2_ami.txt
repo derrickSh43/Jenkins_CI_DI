@@ -6,7 +6,7 @@ resource "aws_instance" "example_instance" {
   subnet_id                   = aws_subnet.front_public_subnet[0].id
 
 
-  user_data_base64 = ("Install_Jenkins.sh")
+  user_data = filebase64("Install_Jenkins.sh")
   tags = {
     Name = "example-instance"
   }

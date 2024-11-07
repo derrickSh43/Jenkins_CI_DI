@@ -16,14 +16,14 @@ resource "aws_autoscaling_group" "ec2_asg" {
 
 resource "aws_launch_template" "ec2_launch_template" {
   name          = "custom-ec2-launch-template"
-  image_id      = aws_ami_from_instance.tomcat_ami.id
+  image_id      = "ami-04bc9311a7218ef81"
   instance_type = "t2.micro"
-#  user_data =  filebase64(
-#   <<-EOF
-#    #!/bin/bash
-#    sudo service tomcat start
-#    EOF
-#  )
+  #  user_data =  filebase64(
+  #   <<-EOF
+  #    #!/bin/bash
+  #    sudo service tomcat start
+  #    EOF
+  #  )
 
   network_interfaces {
     associate_public_ip_address = false

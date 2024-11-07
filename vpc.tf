@@ -13,7 +13,7 @@ resource "aws_vpc" "dev_vpc" {
 variable "vpc_availability_zone" {
   type        = list(string)
   description = "Availability zone"
-  default     = ["us-east-1a","us-east-1b"]
+  default     = ["us-east-1a", "us-east-1b"]
 }
 
 resource "aws_subnet" "front_public_subnet" {
@@ -22,7 +22,7 @@ resource "aws_subnet" "front_public_subnet" {
   cidr_block        = cidrsubnet(aws_vpc.dev_vpc.cidr_block, 8, count.index + 1)
   availability_zone = element(var.vpc_availability_zone, count.index)
   tags = {
-    Name = "Custom Private Subnet${count.index + 1}",
+    Name = "Custom Public Subnet${count.index + 1}",
   }
 }
 resource "aws_subnet" "web_private_subnet" {
@@ -75,3 +75,6 @@ resource "aws_route_table_association" "public_subnet_association" {
   count          = length((var.vpc_availability_zone))
   subnet_id      = element(aws_subnet.front_public_subnet[*].id, count.index)
 }
+
+
+

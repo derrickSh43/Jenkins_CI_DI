@@ -44,8 +44,8 @@ resource "aws_security_group" "ec2j_sg" {
 
   }
     ingress {
-    from_port   = 80
-    to_port     = 80
+    from_port   = 22
+    to_port     = 22
     protocol    = "TCP"
     cidr_blocks = ["0.0.0.0/0"]
 
@@ -63,21 +63,65 @@ resource "aws_security_group" "ec2j_sg" {
   }
 }
 resource "aws_instance" "JenkinsInstance" {
-  ami             = aws_ami_from_instance.example_ami.id
+  ami             = "ami-0e886e280b7bad943"
   instance_type   = "t2.micro"
   security_groups = [aws_security_group.ec2j_sg.id]
   subnet_id       = aws_subnet.BackEnd_private_subnet[0].id
+  associate_public_ip_address = true
+  key_name =  "DevOpsProject"
+/*
+    user_data = <<-EOF
+              #!/bin/bash
+              sudo yum update -y
+              
+              sudo mkdir /etc/nginx/ssl
+              sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/nginx/ssl/nginx-selfsigned.key -out /etc/nginx/ssl/nginx-selfsigned.crt
+              sudo nano /etc/nginx/conf.d/jenkins.conf
 
-   user_data_base64 = ("get_initial_password.sh")
+              server {
+    listen 80;
+    server_name 10.230.21.114;  # Replace with your private IP address
+
+    # Redirect HTTP to HTTPS
+    return 301 https://$host$request_uri;
 }
 
-#Fetch password after Jenkins is provisioned
-data "external" "jenkins_password" {
-  program = ["./get_initial_password.sh"]
-  depends_on = [aws_instance.JenkinsInstance]
-}
+server {
+    listen 443 ssl;
+    server_name 10.230.21.114;  # Replace with your private IP address
 
-output "initialAdminPassword" {
-  value = data.external.jenkins_password.result["initialAdminPassword"]
-}
+    ssl_certificate /etc/nginx/ssl/nginx-selfsigned.crt;
+    ssl_certificate_key /etc/nginx/ssl/nginx-selfsigned.key;
 
+    location /jenkins {
+        proxy_pass http://localhost:8080/jenkins;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Optional: Handle WebSocket connections
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+}
+        sudo systemctl restart nginx
+
+
+
+
+
+
+
+
+              # Start Jenkins service
+              sudo systemctl enable jenkins
+              sudo systemctl start jenkins
+
+         
+              EOF
+}
+ 
+*/
+}
